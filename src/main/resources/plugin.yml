@@ -1,0 +1,7 @@
+name: ContestController
+main: ru.craftcoderr.contestcontroller.ContestControllerPlugin
+api-version: "1.18"
+version: "0.1"
+description: "Contest plots controller"
+authors: [CraftCoderr]
+depend: [PlotSquared, LuckPerms]
