@@ -34,6 +34,12 @@
             <version>6.4.0</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.plotsquared</groupId>
+            <artifactId>plothider</artifactId>
+            <version>5.1.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
         <!-- FAWE API -->
         <dependency>
             <groupId>com.fastasyncworldedit</groupId>

@@ -1,11 +1,16 @@
 package ru.craftcoderr.contestcontroller;
 
 import cloud.commandframework.services.ServicePipeline;
+import com.google.common.eventbus.Subscribe;
 import com.plotsquared.core.PlotAPI;
 import com.plotsquared.core.PlotSquared;
 import com.plotsquared.core.configuration.caption.TranslatableCaption;
 import com.plotsquared.core.database.DBFunc;
+import com.plotsquared.core.events.PlayerAutoPlotEvent;
+import com.plotsquared.core.events.PlayerClaimPlotEvent;
+import com.plotsquared.core.events.PlotClaimedNotifyEvent;
 import com.plotsquared.core.events.TeleportCause;
+import com.plotsquared.core.events.post.PostPlayerAutoPlotEvent;
 import com.plotsquared.core.player.MetaDataAccess;
 import com.plotsquared.core.player.OfflinePlotPlayer;
 import com.plotsquared.core.player.PlayerMetaDataKeys;
@@ -17,6 +22,7 @@ import com.plotsquared.core.util.query.PlotQuery;
 import com.plotsquared.core.util.task.AutoClaimFinishTask;
 import com.plotsquared.core.util.task.RunnableVal;
 import com.plotsquared.core.util.task.TaskManager;
+import com.plotsquared.plothider.HideFlag;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
@@ -54,6 +60,7 @@ public class ContestControllerPlugin extends JavaPlugin implements Listener {
         saveDefaultConfig();
         ds = new DataSource(getConfig());
         Bukkit.getPluginManager().registerEvents(this, this);
+        plotApi.registerListener(this);
         getLogger().info("Enabled!");
     }
 
@@ -125,6 +132,11 @@ public class ContestControllerPlugin extends JavaPlugin implements Listener {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    @Subscribe
+    public void onPlotClaimed(PostPlayerAutoPlotEvent event) {
+        event.getPlot().setFlag(HideFlag.HIDE_FLAG_TRUE);
     }
 
     private String getNameByUserId(int userId) {
