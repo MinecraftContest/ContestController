@@ -119,6 +119,7 @@ public class ContestControllerPlugin extends JavaPlugin implements Listener {
                         return;
                     }
                     foundPlot.get().addTrusted(player.getUUID());
+                    foundPlot.get().teleportPlayer(player, TeleportCause.COMMAND_HOME, result -> {});
                     return;
                 }
                 // Auto-claim plot if user is leader
