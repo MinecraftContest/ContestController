@@ -26,13 +26,19 @@ import com.plotsquared.plothider.HideFlag;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.MiniMessageImpl;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.node.Node;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -52,13 +58,21 @@ public class ContestControllerPlugin extends JavaPlugin implements Listener {
     PlotAPI plotApi = null;
     LuckPerms luckPerms = null;
     DataSource ds = null;
+    FileConfiguration config = null;
+    List<Component> welcomeMessage = new ArrayList<>();
 
     @Override
     public void onEnable() {
         plotApi = new PlotAPI();
         luckPerms = LuckPermsProvider.get();
         saveDefaultConfig();
-        ds = new DataSource(getConfig());
+        config = getConfig();
+
+        for (String line : config.getStringList("welcome-message")) {
+            welcomeMessage.add(MiniMessage.get().parse(line));
+        }
+
+        ds = new DataSource(config);
         Bukkit.getPluginManager().registerEvents(this, this);
         plotApi.registerListener(this);
         getLogger().info("Enabled!");
@@ -66,6 +80,7 @@ public class ContestControllerPlugin extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
+        welcomeMessage.clear();
         getLogger().info("Disabled!");
     }
 
@@ -81,6 +96,10 @@ public class ContestControllerPlugin extends JavaPlugin implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerJoin(PlayerJoinEvent event) {
         UUID playerId = event.getPlayer().getUniqueId();
+
+        for (Component line : welcomeMessage) {
+            event.getPlayer().sendMessage(line);
+        }
 
         PlotPlayer<?> player = PlotSquared.platform().playerManager().getPlayer(event.getPlayer().getUniqueId());
         Optional<Plot> playerPlot = PlotQuery.newQuery().asStream()

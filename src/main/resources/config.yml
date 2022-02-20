@@ -4,3 +4,6 @@ db:
   name: contest
   user: user
   password: secret
+welcome-message:
+- '<green>Example welcome message!</green>'
+- 'Test second line!'
